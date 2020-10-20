@@ -32,7 +32,7 @@ public class FileDataReader implements DataReader {
                 line = fileReader.readLine();
             }
         } catch (IOException e) {
-            LOGGER.info("Exception: " + e.toString());
+            LOGGER.error("Exception: " + e.toString());
             throw new InputDataException(INPUT_ERROR_MESSAGE, e);
         } finally {
             if (fileReader != null) {

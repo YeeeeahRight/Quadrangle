@@ -111,7 +111,7 @@ public class QuadrangleCalculatorTest {
         AnglesCalculable anglesCalculator = new AnglesCalculator(new VectorCalculator());
         QuadrangleCalculable quadrangleCalculator = new QuadrangleCalculator(pointsCalculator, anglesCalculator);
         //when
-        isConvex = quadrangleCalculator.isQuadrangle(SQUARE);
+        isConvex = quadrangleCalculator.isConvex(SQUARE);
         //then
         Assert.assertTrue(isConvex);
     }
@@ -124,7 +124,7 @@ public class QuadrangleCalculatorTest {
         AnglesCalculable anglesCalculator = new AnglesCalculator(new VectorCalculator());
         QuadrangleCalculable quadrangleCalculator = new QuadrangleCalculator(pointsCalculator, anglesCalculator);
         //when
-        isConvex = quadrangleCalculator.isQuadrangle(INCORRECT_QUADRANGLE);
+        isConvex = quadrangleCalculator.isConvex(INCORRECT_QUADRANGLE);
         //then
         Assert.assertFalse(isConvex);
     }

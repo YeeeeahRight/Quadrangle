@@ -1,6 +1,7 @@
 package com.epam.quadrangle.data.director;
 
 import com.epam.quadrangle.data.parser.PointParser;
+import com.epam.quadrangle.data.parser.QuadrangleParser;
 import com.epam.quadrangle.data.reader.impl.FileDataReader;
 import com.epam.quadrangle.data.validator.impl.QuadrangleValidator;
 import com.epam.quadrangle.exceptions.InputDataException;
@@ -41,16 +42,16 @@ public class QuadrangleDirectorTest {
             new ArrayList<>(Arrays.asList(QUADRANGLE, QUADRANGLE, QUADRANGLE));
 
     @Test
-    public void testCreateQuadranglesShouldCreateWhenSuccessfullyReadParsedValidatedOneQuadrangle() throws InputDataException {
+    public void testCreateQuadranglesShouldCreateWhenSuccessfullyReadParsedOneQuadrangle() throws InputDataException {
         //given
         FileDataReader dataReader = Mockito.mock(FileDataReader.class);
         PointParser pointParser = Mockito.mock(PointParser.class);
-        QuadrangleValidator quadrangleValidator = Mockito.mock(QuadrangleValidator.class);
+        QuadrangleParser quadrangleParser = Mockito.mock(QuadrangleParser.class);
         when(dataReader.readData()).thenReturn(TEST_ONE_QUADRANGLE_DATA);
         when(pointParser.parsePoint(anyString())).thenReturn(PARSED_TEST_POINT_FIRST, PARSED_TEST_POINT_SECOND,
                 PARSED_TEST_POINT_THIRD, PARSED_TEST_POINT_FOURTH);
-        when(quadrangleValidator.isValid(anyListOf(Point.class))).thenReturn(true);
-        QuadrangleDirector quadrangleDirector = new QuadrangleDirector(dataReader, pointParser, quadrangleValidator);
+        when(quadrangleParser.parseQuadrangle(anyListOf(Point.class))).thenReturn(QUADRANGLE);
+        QuadrangleDirector quadrangleDirector = new QuadrangleDirector(dataReader, pointParser, quadrangleParser);
         //when
         List<Quadrangle> quadrangle = quadrangleDirector.createQuadrangles();
         //then
@@ -58,18 +59,18 @@ public class QuadrangleDirectorTest {
     }
 
     @Test
-    public void testCreateQuadranglesShouldCreateWhenSuccessfullyReadParsedValidatedThreeQuadrangles() throws InputDataException {
+    public void testCreateQuadranglesShouldCreateWhenSuccessfullyReadParsedThreeQuadrangles() throws InputDataException {
         //given
         FileDataReader dataReader = Mockito.mock(FileDataReader.class);
         PointParser pointParser = Mockito.mock(PointParser.class);
-        QuadrangleValidator quadrangleValidator = Mockito.mock(QuadrangleValidator.class);
+        QuadrangleParser quadrangleParser = Mockito.mock(QuadrangleParser.class);
         when(dataReader.readData()).thenReturn(TEST_THREE_QUADRANGLES_DATA);
         when(pointParser.parsePoint(anyString())).thenReturn(
                 PARSED_TEST_POINT_FIRST, PARSED_TEST_POINT_SECOND, PARSED_TEST_POINT_THIRD, PARSED_TEST_POINT_FOURTH,
                 PARSED_TEST_POINT_FIRST, PARSED_TEST_POINT_SECOND, PARSED_TEST_POINT_THIRD, PARSED_TEST_POINT_FOURTH,
                 PARSED_TEST_POINT_FIRST, PARSED_TEST_POINT_SECOND, PARSED_TEST_POINT_THIRD, PARSED_TEST_POINT_FOURTH);
-        when(quadrangleValidator.isValid(anyListOf(Point.class))).thenReturn(true);
-        QuadrangleDirector quadrangleDirector = new QuadrangleDirector(dataReader, pointParser, quadrangleValidator);
+        when(quadrangleParser.parseQuadrangle(anyListOf(Point.class))).thenReturn(QUADRANGLE);
+        QuadrangleDirector quadrangleDirector = new QuadrangleDirector(dataReader, pointParser, quadrangleParser);
         //when
         List<Quadrangle> quadrangles = quadrangleDirector.createQuadrangles();
         //then
@@ -81,28 +82,11 @@ public class QuadrangleDirectorTest {
         //given
         FileDataReader dataReader = Mockito.mock(FileDataReader.class);
         PointParser pointParser = Mockito.mock(PointParser.class);
-        QuadrangleValidator quadrangleValidator = Mockito.mock(QuadrangleValidator.class);
+        QuadrangleParser quadrangleParser = Mockito.mock(QuadrangleParser.class);
         when(dataReader.readData()).thenReturn(TEST_ONE_QUADRANGLE_DATA);
         when(pointParser.parsePoint(anyString())).thenReturn(null);
-        when(quadrangleValidator.isValid(anyListOf(Point.class))).thenReturn(true);
-        QuadrangleDirector quadrangleDirector = new QuadrangleDirector(dataReader, pointParser, quadrangleValidator);
-        //when
-        List<Quadrangle> quadrangle = quadrangleDirector.createQuadrangles();
-        //then
-        Assert.assertNull(quadrangle);
-    }
-
-    @Test
-    public void testCreateQuadranglesShouldNotCreateWhenValidatorIsNotValidated() throws InputDataException {
-        //given
-        FileDataReader dataReader = Mockito.mock(FileDataReader.class);
-        PointParser pointParser = Mockito.mock(PointParser.class);
-        QuadrangleValidator quadrangleValidator = Mockito.mock(QuadrangleValidator.class);
-        when(dataReader.readData()).thenReturn(TEST_ONE_QUADRANGLE_DATA);
-        when(pointParser.parsePoint(anyString())).thenReturn(PARSED_TEST_POINT_FIRST, PARSED_TEST_POINT_SECOND,
-                PARSED_TEST_POINT_THIRD, PARSED_TEST_POINT_FOURTH);
-        when(quadrangleValidator.isValid(anyListOf(Point.class))).thenReturn(false);
-        QuadrangleDirector quadrangleDirector = new QuadrangleDirector(dataReader, pointParser, quadrangleValidator);
+        when(quadrangleParser.parseQuadrangle(anyListOf(Point.class))).thenReturn(null);
+        QuadrangleDirector quadrangleDirector = new QuadrangleDirector(dataReader, pointParser, quadrangleParser);
         //when
         List<Quadrangle> quadrangle = quadrangleDirector.createQuadrangles();
         //then
@@ -114,12 +98,12 @@ public class QuadrangleDirectorTest {
         //given
         FileDataReader dataReader = Mockito.mock(FileDataReader.class);
         PointParser pointParser = Mockito.mock(PointParser.class);
-        QuadrangleValidator quadrangleValidator = Mockito.mock(QuadrangleValidator.class);
+        QuadrangleParser quadrangleParser = Mockito.mock(QuadrangleParser.class);
         when(dataReader.readData()).thenThrow(InputDataException.class);
         when(pointParser.parsePoint(anyString())).thenReturn(PARSED_TEST_POINT_FIRST, PARSED_TEST_POINT_SECOND,
                 PARSED_TEST_POINT_THIRD, PARSED_TEST_POINT_FOURTH);
-        when(quadrangleValidator.isValid(anyListOf(Point.class))).thenReturn(true);
-        QuadrangleDirector quadrangleDirector = new QuadrangleDirector(dataReader, pointParser, quadrangleValidator);
+        when(quadrangleParser.parseQuadrangle(anyListOf(Point.class))).thenReturn(QUADRANGLE);
+        QuadrangleDirector quadrangleDirector = new QuadrangleDirector(dataReader, pointParser, quadrangleParser);
         //when
         quadrangleDirector.createQuadrangles();
     }

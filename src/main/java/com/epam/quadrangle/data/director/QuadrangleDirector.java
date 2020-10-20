@@ -1,6 +1,7 @@
 package com.epam.quadrangle.data.director;
 
 import com.epam.quadrangle.data.parser.PointParser;
+import com.epam.quadrangle.data.parser.QuadrangleParser;
 import com.epam.quadrangle.data.reader.DataReader;
 import com.epam.quadrangle.data.validator.Validator;
 import com.epam.quadrangle.exceptions.InputDataException;
@@ -17,49 +18,47 @@ public class QuadrangleDirector {
     private static final Logger LOGGER = LogManager.getLogger(QuadrangleDirector.class);
     private static final int QUADRANGLE_POINTS_AMOUNT = 4;
     private static final int POINT_COORDINATES_AMOUNT = 2;
-    private static final IdGenerator idGenerator = new IdGenerator();
     private final DataReader dataReader;
     private final PointParser pointParser;
-    private final Validator quadrangleValidator;
+    private final QuadrangleParser quadrangleParser;
 
-    public QuadrangleDirector(DataReader dataReader, PointParser pointParser, Validator quadrangleValidator) {
+    public QuadrangleDirector(DataReader dataReader, PointParser pointParser, QuadrangleParser quadrangleParser) {
         this.dataReader = dataReader;
         this.pointParser = pointParser;
-        this.quadrangleValidator = quadrangleValidator;
+        this.quadrangleParser = quadrangleParser;
     }
 
     public List<Quadrangle> createQuadrangles() throws InputDataException {
-        LOGGER.info("Prepare to create quadrangles");
+        LOGGER.info("Preparing to create quadrangles");
         List<String> dataLines = dataReader.readData();
         List<Point> points = new ArrayList<>(dataLines.size() / POINT_COORDINATES_AMOUNT);
-        LOGGER.info("Starting parse points");
+        LOGGER.info("Start of point parsing");
         for (String line : dataLines) {
             Point point = pointParser.parsePoint(line);
             if (point != null) {
                 points.add(point);
-            } else {
-                LOGGER.info("One of your points is not parsed");
             }
         }
+        LOGGER.info("End of point parsing");
         int quadranglesAmount = points.size() / QUADRANGLE_POINTS_AMOUNT;
         List<Quadrangle> quadrangles = null;
         if (quadranglesAmount > 0) {
             quadrangles = new ArrayList<>(quadranglesAmount);
-            LOGGER.info("Starting parse quadrangles");
+            LOGGER.info("Start of parsing quadrangles");
             for (int i = 0; i < quadranglesAmount; i++) {
                 int startPos = i * QUADRANGLE_POINTS_AMOUNT;
                 List<Point> quadranglePoints = points.subList(startPos, startPos + QUADRANGLE_POINTS_AMOUNT);
-                if (quadrangleValidator.isValid(quadranglePoints)) {
-                    int id = idGenerator.getId();
-                    quadrangles.add(new Quadrangle(quadranglePoints, id));
+                Quadrangle quadrangle = quadrangleParser.parseQuadrangle(quadranglePoints);
+                if (quadrangle != null) {
+                    quadrangles.add(quadrangle);
                 }
             }
             if (quadrangles.size() == 0) {
                 quadrangles = null;
-                LOGGER.info("Zero quadrangles are passed");
+                LOGGER.warn("Zero quadrangles are passed");
             }
         } else {
-            LOGGER.info("You have no quadrangles");
+            LOGGER.warn("You have no quadrangles");
         }
         LOGGER.info("End of creating quadrangles");
         return quadrangles;
